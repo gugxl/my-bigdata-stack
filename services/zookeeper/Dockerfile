@@ -18,6 +18,6 @@ RUN tar -xzvf /tmp/apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz -C /opt/ \
     && mv /opt/apache-zookeeper-${ZOOKEEPER_VERSION}-bin ${ZOOKEEPER_HOME} \
     && rm /tmp/apache-zookeeper-${ZOOKEEPER_VERSION}-bin.tar.gz
 
-COPY zoo.cfg ${ZOOKEEPER_HOME}/conf/
+COPY services/zookeeper/zoo.cfg ${ZOOKEEPER_HOME}/conf/
 
 ENTRYPOINT ["zkServer.sh", "start-foreground"]

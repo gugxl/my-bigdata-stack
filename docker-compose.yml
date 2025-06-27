@@ -1,4 +1,6 @@
-# ~/my-bigdata-stack/docker-compose.yml
+# ~/my-bigdata-stack/docker-compose.yml (CORRECTED AGAIN)
+
+# The 'version' attribute is obsolete, but harmless. You can remove this line if you want.
 version: "3.8"
 
 networks:
@@ -18,7 +20,9 @@ services:
   zookeeper:
     build:
       context: .
-      dockerfile: ./services/zookeeper
+      dockerfile: ./services/zookeeper/Dockerfile # CORRECT PATH
+      args:
+        ZOOKEEPER_VERSION: ${ZOOKEEPER_VERSION}
     container_name: zookeeper
     hostname: zookeeper
     networks:
@@ -47,23 +51,25 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   namenode:
-    image: bigdata_hadoop-base
+    image: bigdata_hadoop-base # Give the base image a name for others to use
     build:
       context: .
-      dockerfile: ./services/hadoop-base
+      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
+      args:
+        HADOOP_VERSION: ${HADOOP_VERSION}
     container_name: namenode
     hostname: namenode
     networks:
       - bigdata-net
     command: ["hdfs", "namenode"]
     ports:
-      - "9870:9870" # NameNode Web UI
-      - "9000:9000"   # FS
+      - "9870:9870"
+      - "9000:9000"
     volumes:
       - ./configs/hadoop:/etc/hadoop
       - hadoop_namenode_data:/opt/hadoop/data/namenode
     environment:
-      - HADOOP_USER_NAME=root # Allow connections from any user
+      - HADOOP_USER_NAME=root
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9870 || exit 1"]
       interval: 30s
@@ -71,10 +77,12 @@ services:
       retries: 5
 
   datanode:
-    image: bigdata_hadoop-base
+    image: bigdata_hadoop-base # Use the same base image
     build:
       context: .
-      dockerfile: ./services/hadoop-base
+      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
+      args:
+        HADOOP_VERSION: ${HADOOP_VERSION}
     container_name: datanode
     hostname: datanode
     networks:
@@ -88,10 +96,12 @@ services:
       - hadoop_datanode_data:/opt/hadoop/data/datanode
 
   resourcemanager:
-    image: bigdata_hadoop-base
+    image: bigdata_hadoop-base # Use the same base image
     build:
       context: .
-      dockerfile: ./services/hadoop-base
+      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
+      args:
+        HADOOP_VERSION: ${HADOOP_VERSION}
     container_name: resourcemanager
     hostname: resourcemanager
     networks:
@@ -101,7 +111,7 @@ services:
       - namenode
       - datanode
     ports:
-      - "8088:8088" # ResourceManager Web UI
+      - "8088:8088"
     volumes:
       - ./configs/hadoop:/etc/hadoop
     healthcheck:
@@ -111,10 +121,12 @@ services:
       retries: 5
 
   nodemanager:
-    image: bigdata_hadoop-base
+    image: bigdata_hadoop-base # Use the same base image
     build:
       context: .
-      dockerfile: ./services/hadoop-base
+      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
+      args:
+        HADOOP_VERSION: ${HADOOP_VERSION}
     container_name: nodemanager
     hostname: nodemanager
     networks:
@@ -127,10 +139,12 @@ services:
       - ./configs/hadoop:/etc/hadoop
 
   historyserver:
-    image: bigdata_hadoop-base
+    image: bigdata_hadoop-base # Use the same base image
     build:
       context: .
-      dockerfile: ./services/hadoop-base
+      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
+      args:
+        HADOOP_VERSION: ${HADOOP_VERSION}
     container_name: historyserver
     hostname: historyserver
     networks:
@@ -139,7 +153,7 @@ services:
     depends_on:
       - resourcemanager
     ports:
-      - "19888:19888" # Job History Server Web UI
+      - "19888:19888"
     volumes:
       - ./configs/hadoop:/etc/hadoop
       - hadoop_historyserver_data:/opt/hadoop/data/historyserver
@@ -147,14 +161,16 @@ services:
   hbase-master:
     build:
       context: .
-      dockerfile: ./services/hbase
+      dockerfile: ./services/hbase/Dockerfile # CORRECT PATH
+      args:
+        HBASE_VERSION: ${HBASE_VERSION}
     container_name: hbase-master
     hostname: hbase-master
     networks:
       - bigdata-net
     command: ["master", "start"]
     ports:
-      - "16010:16010" # HBase Master Web UI
+      - "16010:16010"
     volumes:
       - ./configs/hbase:/opt/hbase/conf
       - hbase_data:/data/hbase
@@ -165,7 +181,9 @@ services:
   hbase-regionserver:
     build:
       context: .
-      dockerfile: ./services/hbase
+      dockerfile: ./services/hbase/Dockerfile # CORRECT PATH
+      args:
+        HBASE_VERSION: ${HBASE_VERSION}
     container_name: hbase-regionserver
     hostname: hbase-regionserver
     networks:
@@ -177,14 +195,17 @@ services:
   hive-metastore:
     build:
       context: .
-      dockerfile: ./services/hive
+      dockerfile: ./services/hive/Dockerfile # CORRECT PATH
+      args:
+        HIVE_VERSION: ${HIVE_VERSION}
+        PG_JDBC_VERSION: ${PG_JDBC_VERSION}
     container_name: hive-metastore
     hostname: hive-metastore
     networks:
       - bigdata-net
     command: ["metastore"]
     ports:
-      - "9083:9083" # Hive Metastore Thrift
+      - "9083:9083"
     volumes:
       - ./configs/hive:/opt/hive/conf
       - ./configs/hadoop:/opt/hadoop/etc/hadoop # For HDFS access
@@ -195,15 +216,18 @@ services:
   hiveserver2:
     build:
       context: .
-      dockerfile: ./services/hive
+      dockerfile: ./services/hive/Dockerfile # CORRECT PATH
+      args:
+        HIVE_VERSION: ${HIVE_VERSION}
+        PG_JDBC_VERSION: ${PG_JDBC_VERSION}
     container_name: hiveserver2
     hostname: hiveserver2
     networks:
       - bigdata-net
     command: ["hiveserver2"]
     ports:
-      - "10000:10000" # HiveServer2 Thrift
-      - "10002:10002" # HiveServer2 Web UI
+      - "10000:10000"
+      - "10002:10002"
     volumes:
       - ./configs/hive:/opt/hive/conf
       - ./configs/hadoop:/opt/hadoop/etc/hadoop
@@ -214,12 +238,14 @@ services:
   spark-client:
     build:
       context: .
-      dockerfile: ./services/spark
+      dockerfile: ./services/spark/Dockerfile # CORRECT PATH
+      args:
+        SPARK_VERSION: ${SPARK_VERSION}
     container_name: spark-client
     hostname: spark-client
     networks:
       - bigdata-net
-    command: tail -f /dev/null # Keep container running
+    command: tail -f /dev/null
     tty: true
     stdin_open: true
     volumes:
