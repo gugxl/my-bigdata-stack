@@ -14,7 +14,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH=$PATH:$JAVA_HOME/bin
 
 # --- Hadoop Installation ---
-ARG HADOOP_VERSION=3.3.6
+ARG HADOOP_VERSION
 ENV HADOOP_HOME=/opt/hadoop
 ENV HADOOP_CONF_DIR=/etc/hadoop
 ENV HADOOP_LOG_DIR=/var/log/hadoop

@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH=$PATH:$JAVA_HOME/bin
 
-ARG ZOOKEEPER_VERSION=3.8.3
+ARG ZOOKEEPER_VERSION
 ENV ZOOKEEPER_HOME=/opt/zookeeper
 ENV PATH=$PATH:$ZOOKEEPER_HOME/bin
 
