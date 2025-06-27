@@ -1,6 +1,7 @@
-下载
 
+1. 下载文件
+2. 构件基础镜像
+docker-compose build base hadoop-base
 
-
-服务验证金字塔
-我们的验证顺序将遵循以下金字塔结构，从下往上：
+3. 构件应用镜像
+   docker-compose build

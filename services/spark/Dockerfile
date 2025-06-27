@@ -1,5 +1,5 @@
 # ~/my-bigdata-stack/services/spark/Dockerfile
-FROM my-bigdata-base:latest
+FROM bigdata_hadoop:latest
 
 USER root
 
