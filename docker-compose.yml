@@ -160,7 +160,7 @@ services:
       - bigdata-net
     volumes:
       - ./configs/hadoop:/etc/hadoop
-
+# 依赖init-hdfs.sh 脚本执行
   historyserver:
     image: bigdata-hadoop-base:latest
     depends_on:
@@ -178,21 +178,25 @@ services:
 
   hbase-master:
     image: bigdata-hbase:latest
+    build: # 如果您是从本地Dockerfile构建，请保留build部分
+      context: .
+      dockerfile: services/hbase/Dockerfile
     depends_on:
       namenode:
-        condition: service_healthy # Wait until namenode is fully healthy
+        condition: service_healthy
       zookeeper:
-        condition: service_started # Wait until zookeeper container has started
+        condition: service_started
     container_name: hbase-master
     hostname: hbase-master
-    command: ["master", "start"]
+    # 修改这里的command
+    command: ["/opt/hbase/bin/hbase", "master", "start"]
     networks:
       - bigdata-net
     ports:
-      - "16010:16010" # HBase Master Web UI
+      - "16010:16010"
     volumes:
-      - ./configs/hbase:/opt/hbase/conf      # Mount HBase's own configuration
-      - ./configs/hadoop:/etc/hadoop      # Mount general Hadoop configuration
+      - ./configs/hbase:/opt/hbase/conf
+      - ./configs/hadoop:/etc/hadoop
 
   hbase-regionserver:
     image: bigdata-hbase:latest
@@ -201,12 +205,14 @@ services:
         condition: service_started
     container_name: hbase-regionserver
     hostname: hbase-regionserver
-    command: ["regionserver", "start"]
+    # 修改这里的command
+    command: ["/opt/hbase/bin/hbase", "regionserver", "start"]
     networks:
       - bigdata-net
     volumes:
       - ./configs/hbase:/opt/hbase/conf
       - ./configs/hadoop:/etc/hadoop
+
   hive-metastore:
     image: bigdata-hive:latest
     depends_on:
