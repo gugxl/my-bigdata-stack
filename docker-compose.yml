@@ -1,6 +1,4 @@
-# ~/my-bigdata-stack/docker-compose.yml (CORRECTED AGAIN)
-
-# The 'version' attribute is obsolete, but harmless. You can remove this line if you want.
+# ~/my-bigdata-stack/docker-compose.yml
 version: "3.8"
 
 networks:
@@ -17,10 +15,28 @@ volumes:
   zookeeper_log:
 
 services:
+  # Builder service for the base image with OS dependencies
+  base:
+    image: my-bigdata-base:latest
+    build:
+      context: .
+      dockerfile: ./services/base/Dockerfile
+
+  # Builder service for the hadoop image
+  hadoop-base:
+    image: bigdata_hadoop-base:latest
+    build:
+      context: .
+      dockerfile: ./services/hadoop-base/Dockerfile
+      args:
+        HADOOP_VERSION: ${HADOOP_VERSION}
+    depends_on:
+      - base
+
   zookeeper:
     build:
       context: .
-      dockerfile: ./services/zookeeper/Dockerfile # CORRECT PATH
+      dockerfile: ./services/zookeeper/Dockerfile
       args:
         ZOOKEEPER_VERSION: ${ZOOKEEPER_VERSION}
     container_name: zookeeper
@@ -51,17 +67,14 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   namenode:
-    image: bigdata_hadoop-base # Give the base image a name for others to use
-    build:
-      context: .
-      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
-      args:
-        HADOOP_VERSION: ${HADOOP_VERSION}
+    image: bigdata_hadoop-base:latest
+    depends_on:
+      - hadoop-base
     container_name: namenode
     hostname: namenode
+    command: ["hdfs", "namenode"]
     networks:
       - bigdata-net
-    command: ["hdfs", "namenode"]
     ports:
       - "9870:9870"
       - "9000:9000"
@@ -77,39 +90,28 @@ services:
       retries: 5
 
   datanode:
-    image: bigdata_hadoop-base # Use the same base image
-    build:
-      context: .
-      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
-      args:
-        HADOOP_VERSION: ${HADOOP_VERSION}
-    container_name: datanode
-    hostname: datanode
-    networks:
-      - bigdata-net
-    command: ["hdfs", "datanode"]
+    image: bigdata_hadoop-base:latest
     depends_on:
       namenode:
         condition: service_healthy
+    container_name: datanode
+    hostname: datanode
+    command: ["hdfs", "datanode"]
+    networks:
+      - bigdata-net
     volumes:
       - ./configs/hadoop:/etc/hadoop
       - hadoop_datanode_data:/opt/hadoop/data/datanode
 
   resourcemanager:
-    image: bigdata_hadoop-base # Use the same base image
-    build:
-      context: .
-      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
-      args:
-        HADOOP_VERSION: ${HADOOP_VERSION}
+    image: bigdata_hadoop-base:latest
+    depends_on:
+      - datanode
     container_name: resourcemanager
     hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
     networks:
       - bigdata-net
-    command: ["yarn", "resourcemanager"]
-    depends_on:
-      - namenode
-      - datanode
     ports:
       - "8088:8088"
     volumes:
@@ -121,37 +123,27 @@ services:
       retries: 5
 
   nodemanager:
-    image: bigdata_hadoop-base # Use the same base image
-    build:
-      context: .
-      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
-      args:
-        HADOOP_VERSION: ${HADOOP_VERSION}
-    container_name: nodemanager
-    hostname: nodemanager
-    networks:
-      - bigdata-net
-    command: ["yarn", "nodemanager"]
+    image: bigdata_hadoop-base:latest
     depends_on:
       resourcemanager:
         condition: service_healthy
+    container_name: nodemanager
+    hostname: nodemanager
+    command: ["yarn", "nodemanager"]
+    networks:
+      - bigdata-net
     volumes:
       - ./configs/hadoop:/etc/hadoop
 
   historyserver:
-    image: bigdata_hadoop-base # Use the same base image
-    build:
-      context: .
-      dockerfile: ./services/hadoop-base/Dockerfile # CORRECT PATH
-      args:
-        HADOOP_VERSION: ${HADOOP_VERSION}
-    container_name: historyserver
-    hostname: historyserver
-    networks:
-      - bigdata-net
-    command: ["mapred", "historyserver"]
+    image: bigdata_hadoop-base:latest
     depends_on:
       - resourcemanager
+    container_name: historyserver
+    hostname: historyserver
+    command: ["mapred", "historyserver"]
+    networks:
+      - bigdata-net
     ports:
       - "19888:19888"
     volumes:
@@ -161,98 +153,105 @@ services:
   hbase-master:
     build:
       context: .
-      dockerfile: ./services/hbase/Dockerfile # CORRECT PATH
+      dockerfile: ./services/hbase/Dockerfile
       args:
         HBASE_VERSION: ${HBASE_VERSION}
+    depends_on:
+      - namenode
+      - zookeeper
+      - base
     container_name: hbase-master
     hostname: hbase-master
+    command: ["master", "start"]
     networks:
       - bigdata-net
-    command: ["master", "start"]
     ports:
       - "16010:16010"
     volumes:
       - ./configs/hbase:/opt/hbase/conf
+      - ./configs/hadoop:/opt/hadoop/etc/hadoop
       - hbase_data:/data/hbase
-    depends_on:
-      - namenode
-      - zookeeper
 
   hbase-regionserver:
     build:
       context: .
-      dockerfile: ./services/hbase/Dockerfile # CORRECT PATH
+      dockerfile: ./services/hbase/Dockerfile
       args:
         HBASE_VERSION: ${HBASE_VERSION}
-    container_name: hbase-regionserver
-    hostname: hbase-regionserver
-    networks:
-      - bigdata-net
-    command: ["regionserver", "start"]
     depends_on:
       - hbase-master
+    container_name: hbase-regionserver
+    hostname: hbase-regionserver
+    command: ["regionserver", "start"]
+    networks:
+      - bigdata-net
+    volumes:
+      - ./configs/hbase:/opt/hbase/conf
+      - ./configs/hadoop:/opt/hadoop/etc/hadoop
 
   hive-metastore:
     build:
       context: .
-      dockerfile: ./services/hive/Dockerfile # CORRECT PATH
+      dockerfile: ./services/hive/Dockerfile
       args:
         HIVE_VERSION: ${HIVE_VERSION}
         PG_JDBC_VERSION: ${PG_JDBC_VERSION}
+    depends_on:
+      - postgres-metastore
+      - namenode
+      - base
     container_name: hive-metastore
     hostname: hive-metastore
+    command: ["metastore"]
     networks:
       - bigdata-net
-    command: ["metastore"]
     ports:
       - "9083:9083"
     volumes:
       - ./configs/hive:/opt/hive/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop # For HDFS access
-    depends_on:
-      - postgres-metastore
-      - namenode
+      - ./configs/hadoop:/opt/hadoop/etc/hadoop
 
   hiveserver2:
     build:
       context: .
-      dockerfile: ./services/hive/Dockerfile # CORRECT PATH
+      dockerfile: ./services/hive/Dockerfile
       args:
         HIVE_VERSION: ${HIVE_VERSION}
         PG_JDBC_VERSION: ${PG_JDBC_VERSION}
+    depends_on:
+      - hive-metastore
+      - resourcemanager
     container_name: hiveserver2
     hostname: hiveserver2
+    command: ["hiveserver2"]
     networks:
       - bigdata-net
-    command: ["hiveserver2"]
     ports:
       - "10000:10000"
       - "10002:10002"
     volumes:
       - ./configs/hive:/opt/hive/conf
       - ./configs/hadoop:/opt/hadoop/etc/hadoop
-    depends_on:
-      - hive-metastore
-      - resourcemanager
 
   spark-client:
     build:
       context: .
-      dockerfile: ./services/spark/Dockerfile # CORRECT PATH
+      dockerfile: ./services/spark/Dockerfile
       args:
         SPARK_VERSION: ${SPARK_VERSION}
-    container_name: spark-client
-    hostname: spark-client
-    networks:
-      - bigdata-net
-    command: tail -f /dev/null
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./configs/spark:/opt/spark/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop
-      - ./configs/hive:/opt/hive/conf
     depends_on:
       - hiveserver2
       - resourcemanager
       - hbase-master
+      - base
+    container_name: spark-client
+    hostname: spark-client
+    command: tail -f /dev/null
+    tty: true
+    stdin_open: true
+    networks:
+      - bigdata-net
+    volumes:
+      - ./configs/spark:/opt/spark/conf
+      - ./configs/hadoop:/opt/hadoop/etc/hadoop
+      - ./configs/hive:/opt/hive/conf

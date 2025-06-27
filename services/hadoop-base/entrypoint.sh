@@ -1,9 +1,7 @@
 #!/bin/bash
 # ~/my-bigdata-stack/services/hadoop-base/entrypoint.sh
-
 set -e
 
-# Format NameNode if not formatted
 if [ "$1" = "hdfs" ] && [ "$2" = "namenode" ]; then
     if [ ! -d "/opt/hadoop/data/namenode/current" ]; then
         echo "Formatting NameNode..."
@@ -11,8 +9,8 @@ if [ "$1" = "hdfs" ] && [ "$2" = "namenode" ]; then
     fi
 fi
 
-# Start SSH daemon for cluster management scripts
+# Start SSH daemon, required by some Hadoop scripts (e.g., start-dfs.sh)
+# Even if we don't use those scripts, it's good practice.
 sudo service ssh start
 
-# Execute the command passed to the container
 exec "$@"
