@@ -20,4 +20,6 @@ USER hadoop
 WORKDIR /home/hadoop
 
 COPY --chown=hadoop:hadoop services/hive/entrypoint.sh /opt/
+RUN chmod +x /opt/entrypoint.sh
+
 ENTRYPOINT ["/opt/entrypoint.sh"]
