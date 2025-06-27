@@ -20,6 +20,10 @@
         <value>false</value>
     </property>
     <property>
+        <name>datanucleus.fixedDatastore</name>
+        <value>true</value>
+    </property>
+    <property>
         <name>hive.metastore.uris</name>
         <value>thrift://hive-metastore:9083</value>
     </property>

@@ -1,8 +1,8 @@
-# ~/my-bigdata-stack/docker-compose.yml
 version: "3.8"
 
 networks:
   bigdata-net:
+    name: bigdata-net
     driver: bridge
 
 volumes:
@@ -15,30 +15,57 @@ volumes:
   zookeeper_log:
 
 services:
-  # Builder service for the base image with OS dependencies
-  base:
+  # ----------------- Builder Services (only for building images) -----------------
+  base-builder:
     image: my-bigdata-base:latest
     build:
       context: .
-      dockerfile: ./services/base/Dockerfile
+      dockerfile: services/base/Dockerfile
 
-  # Builder service for the hadoop image
-  hadoop-base:
-    image: bigdata_hadoop-base:latest
+  hadoop-builder:
+    image: bigdata-hadoop-base:latest
     build:
       context: .
-      dockerfile: ./services/hadoop-base/Dockerfile
+      dockerfile: services/hadoop-base/Dockerfile
       args:
-        HADOOP_VERSION: ${HADOOP_VERSION}
+        - HADOOP_VERSION=${HADOOP_VERSION}
     depends_on:
-      - base
+      - base-builder
 
-  zookeeper:
+  hbase-builder:
+    image: bigdata-hbase:latest
     build:
       context: .
-      dockerfile: ./services/zookeeper/Dockerfile
+      dockerfile: services/hbase/Dockerfile
       args:
-        ZOOKEEPER_VERSION: ${ZOOKEEPER_VERSION}
+        - HBASE_VERSION=${HBASE_VERSION}
+    depends_on:
+      - hadoop-builder
+
+  hive-builder:
+    image: bigdata-hive:latest
+    build:
+      context: .
+      dockerfile: services/hive/Dockerfile
+      args:
+        - HIVE_VERSION=${HIVE_VERSION}
+        - PG_JDBC_VERSION=${PG_JDBC_VERSION}
+    depends_on:
+      - hadoop-builder
+
+  spark-builder:
+    image: bigdata-spark:latest
+    build:
+      context: .
+      dockerfile: services/spark/Dockerfile
+      args:
+        - SPARK_VERSION=${SPARK_VERSION}
+    depends_on:
+      - hadoop-builder
+
+  # ----------------- Runtime Services (these will actually run) -----------------
+  zookeeper:
+    image: zookeeper:${ZOOKEEPER_VERSION}
     container_name: zookeeper
     hostname: zookeeper
     networks:
@@ -49,7 +76,7 @@ services:
       - zookeeper_data:/data
       - zookeeper_log:/datalog
     environment:
-      ZOO_SERVER_ID: 1
+      - ZOO_SERVER_ID=1
 
   postgres-metastore:
     image: postgres:14
@@ -67,9 +94,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   namenode:
-    image: bigdata_hadoop-base:latest
-    depends_on:
-      - hadoop-base
+    image: bigdata-hadoop-base:latest
     container_name: namenode
     hostname: namenode
     command: ["hdfs", "namenode"]
@@ -84,13 +109,13 @@ services:
     environment:
       - HADOOP_USER_NAME=root
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9870 || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://namenode:9870 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
 
   datanode:
-    image: bigdata_hadoop-base:latest
+    image: bigdata-hadoop-base:latest
     depends_on:
       namenode:
         condition: service_healthy
@@ -104,9 +129,10 @@ services:
       - hadoop_datanode_data:/opt/hadoop/data/datanode
 
   resourcemanager:
-    image: bigdata_hadoop-base:latest
+    image: bigdata-hadoop-base:latest
     depends_on:
-      - datanode
+      datanode:
+        condition: service_started
     container_name: resourcemanager
     hostname: resourcemanager
     command: ["yarn", "resourcemanager"]
@@ -123,22 +149,23 @@ services:
       retries: 5
 
   nodemanager:
-    image: bigdata_hadoop-base:latest
+    image: bigdata-hadoop-base:latest
     depends_on:
       resourcemanager:
         condition: service_healthy
     container_name: nodemanager
     hostname: nodemanager
-    command: ["yarn", "nodemanager"]                   # <--- 允许我们输入
+    command: ["yarn", "nodemanager"]
     networks:
       - bigdata-net
     volumes:
       - ./configs/hadoop:/etc/hadoop
 
   historyserver:
-    image: bigdata_hadoop-base:latest
+    image: bigdata-hadoop-base:latest
     depends_on:
-      - resourcemanager
+      resourcemanager:
+        condition: service_healthy
     container_name: historyserver
     hostname: historyserver
     command: ["mapred", "historyserver"]
@@ -148,18 +175,14 @@ services:
       - "19888:19888"
     volumes:
       - ./configs/hadoop:/etc/hadoop
-      - hadoop_historyserver_data:/opt/hadoop/data/historyserver
 
   hbase-master:
-    build:
-      context: .
-      dockerfile: ./services/hbase/Dockerfile
-      args:
-        HBASE_VERSION: ${HBASE_VERSION}
+    image: bigdata-hbase:latest
     depends_on:
-      - namenode
-      - zookeeper
-      - base
+      namenode:
+        condition: service_healthy
+      zookeeper:
+        condition: service_started
     container_name: hbase-master
     hostname: hbase-master
     command: ["master", "start"]
@@ -169,17 +192,12 @@ services:
       - "16010:16010"
     volumes:
       - ./configs/hbase:/opt/hbase/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop
-      - hbase_data:/data/hbase
 
   hbase-regionserver:
-    build:
-      context: .
-      dockerfile: ./services/hbase/Dockerfile
-      args:
-        HBASE_VERSION: ${HBASE_VERSION}
+    image: bigdata-hbase:latest
     depends_on:
-      - hbase-master
+      hbase-master:
+        condition: service_started
     container_name: hbase-regionserver
     hostname: hbase-regionserver
     command: ["regionserver", "start"]
@@ -187,19 +205,14 @@ services:
       - bigdata-net
     volumes:
       - ./configs/hbase:/opt/hbase/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop
 
   hive-metastore:
-    build:
-      context: .
-      dockerfile: ./services/hive/Dockerfile
-      args:
-        HIVE_VERSION: ${HIVE_VERSION}
-        PG_JDBC_VERSION: ${PG_JDBC_VERSION}
+    image: bigdata-hive:latest
     depends_on:
-      - postgres-metastore
-      - namenode
-      - base
+      postgres-metastore:
+        condition: service_started
+      namenode:
+        condition: service_healthy
     container_name: hive-metastore
     hostname: hive-metastore
     command: ["metastore"]
@@ -209,18 +222,14 @@ services:
       - "9083:9083"
     volumes:
       - ./configs/hive:/opt/hive/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop
 
   hiveserver2:
-    build:
-      context: .
-      dockerfile: ./services/hive/Dockerfile
-      args:
-        HIVE_VERSION: ${HIVE_VERSION}
-        PG_JDBC_VERSION: ${PG_JDBC_VERSION}
+    image: bigdata-hive:latest
     depends_on:
-      - hive-metastore
-      - resourcemanager
+      hive-metastore:
+        condition: service_started
+      resourcemanager:
+        condition: service_healthy
     container_name: hiveserver2
     hostname: hiveserver2
     command: ["hiveserver2"]
@@ -231,27 +240,21 @@ services:
       - "10002:10002"
     volumes:
       - ./configs/hive:/opt/hive/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop
 
   spark-client:
-    build:
-      context: .
-      dockerfile: ./services/spark/Dockerfile
-      args:
-        SPARK_VERSION: ${SPARK_VERSION}
+    image: bigdata-spark:latest
     depends_on:
       - hiveserver2
-      - resourcemanager
       - hbase-master
-      - base
     container_name: spark-client
     hostname: spark-client
     command: tail -f /dev/null
     tty: true
     stdin_open: true
+
     networks:
       - bigdata-net
     volumes:
       - ./configs/spark:/opt/spark/conf
-      - ./configs/hadoop:/opt/hadoop/etc/hadoop
+      - ./configs/hadoop:/etc/hadoop
       - ./configs/hive:/opt/hive/conf

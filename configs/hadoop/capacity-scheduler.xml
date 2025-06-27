@@ -1,65 +1,30 @@
-<!-- ~/my-bigdata-stack/configs/hadoop/capacity-scheduler.xml -->
 <configuration>
-
     <property>
         <name>yarn.scheduler.capacity.root.queues</name>
         <value>default</value>
-        <description>
-            The list of child queues for the root queue.
-            Here we are defining a single queue named 'default'.
-        </description>
     </property>
-
     <property>
         <name>yarn.scheduler.capacity.root.default.capacity</name>
         <value>100</value>
-        <description>
-            The percentage of resources allocated to the 'default' queue.
-            100 means it gets all the cluster resources.
-        </description>
     </property>
-
     <property>
         <name>yarn.scheduler.capacity.root.default.user-limit-factor</name>
         <value>1</value>
-        <description>
-            Allows a single user to occupy all the resources of the queue.
-            This is useful for a single-user development environment.
-        </description>
     </property>
-
     <property>
         <name>yarn.scheduler.capacity.root.default.maximum-capacity</name>
         <value>100</value>
-        <description>
-            The maximum percentage of resources the 'default' queue can use.
-        </description>
     </property>
-
     <property>
         <name>yarn.scheduler.capacity.root.default.state</name>
         <value>RUNNING</value>
-        <description>
-            The state of the 'default' queue. Must be RUNNING to accept jobs.
-        </description>
     </property>
-
     <property>
         <name>yarn.scheduler.capacity.root.default.acl_submit_applications</name>
         <value>*</value>
-        <description>
-            Access control list for submitting applications to the 'default' queue.
-            '*' means any user can submit jobs.
-        </description>
     </property>
-
     <property>
         <name>yarn.scheduler.capacity.root.default.acl_administer_queue</name>
         <value>*</value>
-        <description>
-            Access control list for administering the 'default' queue.
-            '*' means any user can administer it.
-        </description>
     </property>
-
 </configuration>
