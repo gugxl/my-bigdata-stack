@@ -15,4 +15,11 @@
         <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
         <description>Explicitly set the scheduler to CapacityScheduler.</description>
     </property>
+
+    <!-- Add this property to bind web ui to all interfaces -->
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>0.0.0.0:8088</value>
+        <description>Bind the web UI to all network interfaces inside the container.</description>
+    </property>
 </configuration>

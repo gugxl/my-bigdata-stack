@@ -117,7 +117,7 @@ services:
     volumes:
       - ./configs/hadoop:/etc/hadoop
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8088 || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://resourcemanager:8088 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -129,7 +129,7 @@ services:
         condition: service_healthy
     container_name: nodemanager
     hostname: nodemanager
-    command: ["yarn", "nodemanager"]
+    command: ["yarn", "nodemanager"]                   # <--- 允许我们输入
     networks:
       - bigdata-net
     volumes:
