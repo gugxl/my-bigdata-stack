@@ -180,18 +180,19 @@ services:
     image: bigdata-hbase:latest
     depends_on:
       namenode:
-        condition: service_healthy
+        condition: service_healthy # Wait until namenode is fully healthy
       zookeeper:
-        condition: service_started
+        condition: service_started # Wait until zookeeper container has started
     container_name: hbase-master
     hostname: hbase-master
     command: ["master", "start"]
     networks:
       - bigdata-net
     ports:
-      - "16010:16010"
+      - "16010:16010" # HBase Master Web UI
     volumes:
-      - ./configs/hbase:/opt/hbase/conf
+      - ./configs/hbase:/opt/hbase/conf      # Mount HBase's own configuration
+      - ./configs/hadoop:/etc/hadoop      # Mount general Hadoop configuration
 
   hbase-regionserver:
     image: bigdata-hbase:latest
@@ -205,7 +206,7 @@ services:
       - bigdata-net
     volumes:
       - ./configs/hbase:/opt/hbase/conf
-
+      - ./configs/hadoop:/etc/hadoop
   hive-metastore:
     image: bigdata-hive:latest
     depends_on:
@@ -222,7 +223,7 @@ services:
       - "9083:9083"
     volumes:
       - ./configs/hive:/opt/hive/conf
-
+      - ./configs/hadoop:/etc/hadoop
   hiveserver2:
     image: bigdata-hive:latest
     depends_on:
@@ -240,7 +241,7 @@ services:
       - "10002:10002"
     volumes:
       - ./configs/hive:/opt/hive/conf
-
+      - ./configs/hadoop:/etc/hadoop
   spark-client:
     image: bigdata-spark:latest
     depends_on:
