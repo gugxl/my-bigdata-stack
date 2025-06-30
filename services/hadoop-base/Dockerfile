@@ -17,4 +17,6 @@ RUN sudo tar -xzvf /tmp/hadoop-${HADOOP_VERSION}.tar.gz -C /opt/ \
     && sudo chown -R hadoop:hadoop /opt/hadoop* ${HADOOP_LOG_DIR} /var/run/hadoop
 
 COPY --chown=hadoop:hadoop services/hadoop-base/entrypoint.sh /opt/
+RUN chmod +x /opt/entrypoint.sh
+
 ENTRYPOINT ["/opt/entrypoint.sh"]

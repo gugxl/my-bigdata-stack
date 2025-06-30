@@ -7,13 +7,13 @@
 hadoop-builder 是 base-builder + hadoop
 
 
+
 3. 构件应用镜像
-   docker compose up -d
+   docker-compose up --build -d
+4. 初始化文件路径
+chmod +x init-hdfs.sh
+./init-hdfs.sh
 
+docker compose up -d historyserver
 
-启动
-
-当namenode启动之后执行
-./init-hdfs.sh 
-脚本
 
