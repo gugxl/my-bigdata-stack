@@ -1,16 +1,20 @@
 
-1. 下载文件
-2. 构件基础镜像
-   docker-compose build base-builder hadoop-builder hbase-builder hive-builder spark-builder
- 
+# 1. 下载文件
+# 2. 构件镜像
+## 2.1 构建基础层镜像（所有服务的依赖）
+docker-compose build base-builder
 说明：base-builder是基础镜像 包含 ubuntu jdk和基础环境
+
+## 2.2 构建Hadoop基础镜像（其他服务依赖）
+docker-compose build hadoop-builder
 hadoop-builder 是 base-builder + hadoop
 
+## 2.3 并行构建HBase/Hive/Spark镜像（无相互依赖）
+docker-compose build --parallel hbase-builder hive-builder spark-builder
 
-
-3. 构件应用镜像
-   docker-compose up --build -d
-4. 初始化文件路径
+# 3. 启动容器
+   docker-compose up -d
+# 4. 初始化文件路径
 chmod +x init-hdfs.sh
 ./init-hdfs.sh
 
