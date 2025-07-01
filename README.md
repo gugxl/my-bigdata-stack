@@ -1,5 +1,13 @@
 
 # 1. 下载文件
+
+```bash
+wget https://archive.apache.org/dist/hadoop/core/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+wget https://archive.apache.org/dist/hbase/2.5.6/hbase-2.5.6-bin.tar.gz
+wget https://archive.apache.org/dist/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz
+wget https://archive.apache.org/dist/spark/spark-3.5.0/spark-3.5.0-bin-hadoop3.tgz
+wget https://jdbc.postgresql.org/download/postgresql-42.7.1.jar
+```
 # 2. 构件镜像
 ## 2.1 构建基础层镜像（所有服务的依赖）
 docker-compose build base-builder
