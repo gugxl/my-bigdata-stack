@@ -22,6 +22,7 @@ services:
     build:
       context: .
       dockerfile: services/base/Dockerfile
+    profiles: ["build"]
 
   hadoop-builder:
     image: bigdata-hadoop-base:latest
@@ -32,6 +33,7 @@ services:
         - HADOOP_VERSION=${HADOOP_VERSION}
     depends_on:
       - base-builder
+    profiles: ["build"]
 
   hbase-builder:
     image: bigdata-hbase:latest
@@ -42,6 +44,7 @@ services:
         - HBASE_VERSION=${HBASE_VERSION}
     depends_on:
       - hadoop-builder
+    profiles: ["build"]
 
   hive-builder:
     image: bigdata-hive:latest
@@ -53,6 +56,7 @@ services:
         - PG_JDBC_VERSION=${PG_JDBC_VERSION}
     depends_on:
       - hadoop-builder
+    profiles: ["build"]
 
   spark-builder:
     image: bigdata-spark:latest
@@ -63,6 +67,7 @@ services:
         - SPARK_VERSION=${SPARK_VERSION}
     depends_on:
       - hadoop-builder
+    profiles: ["build"]
 
   # ----------------- Runtime Services (these will actually run) -----------------
   zookeeper:
@@ -179,9 +184,6 @@ services:
 
   hbase-master:
     image: bigdata-hbase:latest
-    build: # 如果您是从本地Dockerfile构建，请保留build部分
-      context: .
-      dockerfile: services/hbase/Dockerfile
     depends_on:
       namenode:
         condition: service_healthy
