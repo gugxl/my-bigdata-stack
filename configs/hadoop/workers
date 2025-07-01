@@ -1,2 +1,3 @@
+# my-bigdata-stack/configs/hadoop/workers
 datanode
 nodemanager

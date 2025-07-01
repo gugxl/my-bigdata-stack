@@ -1,4 +1,5 @@
 #!/bin/bash
+# my-bigdata-stack/services/spark/entrypoint.sh
 set -e
 
 # 将Hadoop的配置文件链接到Spark的conf目录

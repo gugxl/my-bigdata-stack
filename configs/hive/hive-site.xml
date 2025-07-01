@@ -1,3 +1,4 @@
+<!-- my-bigdata-stack/configs/hive/hive-site.xml -->
 <configuration>
     <property>
         <name>javax.jdo.option.ConnectionURL</name>

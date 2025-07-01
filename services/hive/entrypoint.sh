@@ -1,4 +1,6 @@
 #!/bin/bash
+# my-bigdata-stack\services\hive\entrypoint.sh
+
 set -e
 
 if [ "$1" = "metastore" ]; then

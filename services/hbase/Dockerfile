@@ -1,4 +1,4 @@
-# ~/my-bigdata-stack/services/hbase/Dockerfile (ROBUST VERSION)
+# my-bigdata-stack/services/hbase/Dockerfile
 FROM bigdata-hadoop-base:latest
 
 USER root

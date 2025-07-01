@@ -1,4 +1,5 @@
 #!/bin/bash
+# my-bigdata-stack/services/hadoop-base/entrypoint.sh
 set -e
 
 if [ "$1" = "hdfs" ] && [ "$2" = "namenode" ]; then

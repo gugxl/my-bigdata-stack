@@ -1,4 +1,6 @@
 #!/bin/bash
+# my-bigdata-stack/services/hbase/entrypoint.sh
+
 set -e
 
 until hdfs dfs -ls / >/dev/null 2>&1; do

@@ -1,3 +1,4 @@
+<!-- my-bigdata-stack/configs/hbase/hbase-site.xml -->
 <configuration>
     <property>
         <name>hbase.cluster.distributed</name>

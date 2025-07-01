@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# my-bigdata-stack\init-hdfs.sh
+
 echo "--- Initializing HDFS directories and permissions ---"
 echo "Waiting for NameNode to be ready..."
 

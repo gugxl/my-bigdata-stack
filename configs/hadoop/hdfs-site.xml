@@ -1,3 +1,4 @@
+<!-- my-bigdata-stack/configs/hadoop/hdfs-site.xml -->
 <configuration>
     <property>
         <name>dfs.replication</name>

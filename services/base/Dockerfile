@@ -1,3 +1,4 @@
+# my-bigdata-stack/services/base/Dockerfile
 FROM ubuntu:22.04
 
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \

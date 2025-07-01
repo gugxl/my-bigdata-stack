@@ -1,3 +1,4 @@
+# my-bigdata-stack\services\hive\Dockerfile
 FROM bigdata-hadoop-base:latest
 
 USER root

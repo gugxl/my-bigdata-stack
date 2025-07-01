@@ -1,3 +1,4 @@
+# my-bigdata-stack/services/hadoop-base/Dockerfile
 FROM my-bigdata-base:latest
 
 ARG HADOOP_VERSION
