@@ -10,13 +10,11 @@ wget https://jdbc.postgresql.org/download/postgresql-42.7.1.jar
 ```
 # 2. 构件镜像
 ## 2.1 构建基础层镜像（所有服务的依赖）
+```bash
 docker-compose --profile build build
+```
 
 说明：base-builder是基础镜像 包含 ubuntu jdk和基础环境
-
-## 2.2 构建Hadoop基础镜像（其他服务依赖）
-docker-compose build hadoop-builder
-hadoop-builder 是 base-builder + hadoop
 
 ## 2.3 并行构建HBase/Hive/Spark镜像（无相互依赖）
 docker-compose build --parallel hbase-builder hive-builder spark-builder

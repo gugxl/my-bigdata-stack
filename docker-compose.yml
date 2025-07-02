@@ -198,7 +198,8 @@ services:
     ports:
       - "16010:16010"
     volumes:
-      - ./configs/hbase:/opt/hbase/conf
+      - ./configs/hbase/hbase-site.xml:/opt/hbase/conf/hbase-site.xml
+      - ./configs/hbase/hbase-env.sh:/opt/hbase/conf/hbase-env.sh
       - ./configs/hadoop:/etc/hadoop
 
   hbase-regionserver:
@@ -213,7 +214,8 @@ services:
     networks:
       - bigdata-net
     volumes:
-      - ./configs/hbase:/opt/hbase/conf
+      - ./configs/hbase/hbase-site.xml:/opt/hbase/conf/hbase-site.xml
+      - ./configs/hbase/hbase-env.sh:/opt/hbase/conf/hbase-env.sh
       - ./configs/hadoop:/etc/hadoop
 
   hive-metastore:

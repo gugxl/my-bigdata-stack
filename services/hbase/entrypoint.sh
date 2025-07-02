@@ -9,4 +9,4 @@ until hdfs dfs -ls / >/dev/null 2>&1; do
 done
 echo "HDFS is ready. Starting HBase..."
 
-exec $HBASE_HOME/bin/hbase.sh "$@"
+exec $HBASE_HOME/bin/hbase "$@"
