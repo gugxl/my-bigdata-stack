@@ -1,18 +1,28 @@
 # my-bigdata-stack/services/base/Dockerfile
 FROM ubuntu:22.04
 
+# 1. 设置 TZ 环境变量，很多程序会直接读取这个变量
+ENV TZ=Asia/Shanghai
+
 RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 
-# 第一个 RUN 指令，用于安装软件包。注意这一段的末尾没有续行符 '\'
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-11-jdk wget ssh rsync curl sudo \
-  && rm -rf /var/lib/apt/lists/*
+# 2. 在一个 RUN 指令中，以非交互式方式安装依赖并设定操作系统时区
+RUN apt-get update && \
+    # 设置 DEBIAN_FRONTEND=noninteractive 来避免 tzdata 的交互式弹窗
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        openjdk-11-jdk wget ssh rsync curl sudo tzdata && \
+    # 再次确认时区设置，确保它被持久化
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
+    # 清理 apt 缓存
+    rm -rf /var/lib/apt/lists/*
 
-# 第二个 RUN 指令，用于创建符号链接
+# ---- 后面的内容保持不变 ----
+
+# 设置 JAVA_HOME, PATH
+# 注意：我们不再需要 JAVA_OPTS 或 JAVA_TOOL_OPTIONS 来单独设置时区
+# 因为一个正确设置了时区的操作系统，其上启动的 JVM 默认会继承该时区
 RUN ln -s /usr/lib/jvm/java-11-openjdk-* /usr/lib/jvm/java-11
-
-# 设置环境变量
 ENV JAVA_HOME=/usr/lib/jvm/java-11
 ENV PATH=$PATH:$JAVA_HOME/bin
 
