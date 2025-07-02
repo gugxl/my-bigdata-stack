@@ -28,6 +28,5 @@ docker-compose build --parallel hbase-builder hive-builder spark-builder
 ```bash
 chmod +x init-hdfs.sh
 ./init-hdfs.sh
-
 docker compose up -d historyserver
 ```
