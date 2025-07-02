@@ -1,39 +1,89 @@
-<!-- my-bigdata-stack/configs/hive/hive-site.xml -->
 <configuration>
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
         <value>jdbc:postgresql://postgres-metastore:5432/metastore_db</value>
+        <description>JDBC connect string for a JDBC metastore. The hostname 'postgres-metastore' must be the service name of your PostgreSQL container in docker-compose.yml.</description>
     </property>
+
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>org.postgresql.Driver</value>
+        <description>Driver class name for a JDBC metastore.</description>
     </property>
+
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
         <value>hive</value>
+        <description>Username to use against metastore database.</description>
     </property>
+
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>hivepass</value>
+        <description>Password to use against metastore database.</description>
     </property>
+
     <property>
         <name>datanucleus.autoCreateSchema</name>
         <value>false</value>
+        <description>Set to false because the schema should be initialized manually by the 'schematool'. This prevents services from trying to modify the schema on startup.</description>
     </property>
+
     <property>
         <name>datanucleus.fixedDatastore</name>
         <value>true</value>
+        <description>Should be true to prevent schema changes from client.</description>
     </property>
+
+
     <property>
         <name>hive.metastore.uris</name>
         <value>thrift://hive-metastore:9083</value>
+        <description>URI for remote metastore. The hostname 'hive-metastore' must be the service name of your Hive Metastore container in docker-compose.yml.</description>
     </property>
+
+
     <property>
         <name>hive.metastore.warehouse.dir</name>
         <value>/user/hive/warehouse</value>
+        <description>Location of the default database for the warehouse.</description>
     </property>
+
+
+    <property>
+        <name>hive.server2.thrift.port</name>
+        <value>10000</value>
+        <description>The port HiveServer2 listens on for client connections.</description>
+    </property>
+
+    <property>
+        <name>hive.server2.thrift.bind.host</name>
+        <value>0.0.0.0</value>
+        <description>The host address HiveServer2 binds to. '0.0.0.0' is crucial for Docker as it means "listen on all available network interfaces inside the container".</description>
+    </property>
+
+
     <property>
         <name>hive.server2.webui.host</name>
         <value>0.0.0.0</value>
+        <description>The host address for the HiveServer2 Web UI to bind to. '0.0.0.0' allows it to be accessible from outside the container (via port mapping).</description>
     </property>
+    <property>
+        <name>hive.server2.webui.port</name>
+        <value>10002</value>
+        <description>The port for the HiveServer2 Web UI.</description>
+    </property>
+
+    <property>
+        <name>hive.server2.enable.doAs</name>
+        <value>false</value>
+        <description>Set to false if not using Kerberos. This simplifies user impersonation logic.</description>
+    </property>
+
+    <property>
+        <name>hive.execution.engine</name>
+        <value>mr</value>
+        <description>Set the execution engine. Can be 'mr' (MapReduce), 'tez', or 'spark'. 'mr' is the most basic and a good starting point.</description>
+    </property>
+
 </configuration>

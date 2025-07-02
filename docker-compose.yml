@@ -233,7 +233,11 @@ services:
     ports:
       - "9083:9083"
     volumes:
-      - ./configs/hive:/opt/hive/conf
+      - ./configs/hive/hive-site.xml:/opt/hive/conf/hive-site.xml
+      - ./configs/hive/log4j2.properties:/opt/hive/conf/log4j2.properties
+      - ./configs/hive/hive-exec-log4j2.properties:/opt/hive/conf/hive-exec-log4j2.properties
+      - ./configs/hive/beeline-log4j2.properties:/opt/hive/conf/beeline-log4j2.properties
+      # 依赖hadoop配置
       - ./configs/hadoop:/etc/hadoop
   hiveserver2:
     image: bigdata-hive:latest
@@ -251,7 +255,11 @@ services:
       - "10000:10000"
       - "10002:10002"
     volumes:
-      - ./configs/hive:/opt/hive/conf
+      - ./configs/hive/hive-site.xml:/opt/hive/conf/hive-site.xml
+      - ./configs/hive/log4j2.properties:/opt/hive/conf/log4j2.properties
+      - ./configs/hive/hive-exec-log4j2.properties:/opt/hive/conf/hive-exec-log4j2.properties
+      - ./configs/hive/beeline-log4j2.properties:/opt/hive/conf/beeline-log4j2.properties
+      # 依赖hadoop配置
       - ./configs/hadoop:/etc/hadoop
   spark-client:
     image: bigdata-spark:latest
