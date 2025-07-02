@@ -14,6 +14,7 @@ volumes:
   postgres_metastore_data:
   zookeeper_data:
   zookeeper_log:
+  zookeeper_logs:
 
 services:
   # ----------------- Builder Services (only for building images) -----------------
@@ -81,6 +82,7 @@ services:
     volumes:
       - zookeeper_data:/data
       - zookeeper_log:/datalog
+      - zookeeper_logs:/logs
     environment:
       - ZOO_SERVER_ID=1
 
