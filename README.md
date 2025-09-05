@@ -129,24 +129,31 @@ spark-shell
 如果能够正常启动 Spark Shell，则说明 `spark-client` 服务正常。
 
 
-## 清理
+## 五、清理
 
-docker compose down
+清理容器和扩展卷
+```bash
 docker compose down --volumes --remove-orphans
+```
 
+移除构建中使用的容器
+```bash
 docker compose --profile build down --volumes
+```
 
+删除镜像
+```bash
 docker rmi -f $(docker images -q bigdata-hadoop-base)
 docker rmi -f $(docker images -q bigdata-hive)
 docker rmi -f $(docker images -q bigdata-hbase)
 docker rmi -f $(docker images -q bigdata-spark)
 docker rmi -f $(docker images -q my-bigdata-base)
+```
 
-
-## 五、总结
+## 六、总结
 通过以上步骤，我们成功地使用 Docker 和 Docker Compose 搭建了一个包含多个大数据服务的开发环境，并验证了每个服务的正常运行。这种容器化的部署方式不仅方便快捷，而且易于管理和维护。希望本文能对大数据开发者有所帮助。
 
-## 六、注意事项
+## 七、注意事项
 - 确保你的系统已经安装了 Docker 和 Docker Compose。
 - 在构建镜像和启动容器时，可能需要一些时间，请耐心等待。
 - 如果在验证过程中发现某个服务出现问题，可以查看相应的日志文件进行排查。
