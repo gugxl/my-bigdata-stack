@@ -41,7 +41,7 @@ docker compose --profile build build spark-builder
 ### 3.3 启动容器
 使用以下命令启动所有服务的容器：
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 3.4 初始化文件路径
@@ -59,65 +59,65 @@ docker compose up -d historyserver
     - `./configs/spark:/opt/spark/conf`：Spark 相关配置文件。
     - `./configs/hadoop:/etc/hadoop`：Hadoop 相关配置文件。
     - `./configs/hive:/opt/hive/conf`：Hive 相关配置文件。
-- **启动命令**：`docker-compose` 启动时，`spark-client` 的启动命令为 `tail -f /dev/null`，保持容器处于运行状态。
+- **启动命令**：`docker compose` 启动时，`spark-client` 的启动命令为 `tail -f /dev/null`，保持容器处于运行状态。
 
 ## 四、服务验证
 为了确保每个服务都正常运行，我们需要按照服务依赖的从底层到上层的顺序进行验证。
 
 ### 4.1 第一层：基础协调与数据库服务
 #### 4.1.1 ZooKeeper
-- **容器状态**：`docker-compose ps zookeeper`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs zookeeper`，寻找 `binding to port 0.0.0.0/0.0.0.0:2181`，且日志中不应有任何 `ERROR` 或 `Exception`。
+- **容器状态**：`docker compose ps zookeeper`，状态应为 `Up`。
+- **日志检查**：`docker compose logs zookeeper`，寻找 `binding to port 0.0.0.0/0.0.0.0:2181`，且日志中不应有任何 `ERROR` 或 `Exception`。
 - **端口连接**：从终端执行 `echo "ruok" | nc localhost 2181`，如果返回 `imok`，则表示 ZooKeeper 服务完全正常。
 
 #### 4.1.2 PostgreSQL
-- **容器状态**：`docker-compose ps postgres-metastore`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs postgres-metastore`，寻找 `database system is ready to accept connections`。
+- **容器状态**：`docker compose ps postgres-metastore`，状态应为 `Up`。
+- **日志检查**：`docker compose logs postgres-metastore`，寻找 `database system is ready to accept connections`。
 
 ### 4.2 第二层：核心存储 (HDFS)
 #### 4.2.1 NameNode
-- **容器状态**：`docker-compose ps namenode`，状态应为 `Up (healthy)`。
-- **日志检查**：`docker-compose logs namenode`，首次启动会有 `STARTUP_MSG: Starting NameNode` 和 `successfully formatted` 的日志；正常运行时，日志不应有 `ERROR` 或 `Exception`，寻找 `Serving GSSAPI ...` 和 `IPC Server handler ...` 等信息。
+- **容器状态**：`docker compose ps namenode`，状态应为 `Up (healthy)`。
+- **日志检查**：`docker compose logs namenode`，首次启动会有 `STARTUP_MSG: Starting NameNode` 和 `successfully formatted` 的日志；正常运行时，日志不应有 `ERROR` 或 `Exception`，寻找 `Serving GSSAPI ...` 和 `IPC Server handler ...` 等信息。
 - **Web UI**：在浏览器中访问 [http://localhost:9870](http://localhost:9870)，能看到 HDFS 的管理界面，在 "Datanodes" 标签页下应能看到活动的 DataNode。
 
 #### 4.2.2 DataNode
-- **容器状态**：`docker-compose ps datanode`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs datanode`，寻找 `STARTUP_MSG: Starting DataNode` 或 `Block pool ... registered with namenode`。
+- **容器状态**：`docker compose ps datanode`，状态应为 `Up`。
+- **日志检查**：`docker compose logs datanode`，寻找 `STARTUP_MSG: Starting DataNode` 或 `Block pool ... registered with namenode`。
 - **NameNode Web UI 确认**：访问 [http://localhost:9870/dfshealth.html#tab-datanode](http://localhost:9870/dfshealth.html#tab-datanode)，能看到至少一个 "Live" 的 DataNode，并且它的状态是 "In Service"。
 
 ### 4.3 第三层：资源调度 (YARN)
 #### 4.3.1 ResourceManager
-- **容器状态**：`docker-compose ps resourcemanager`，状态应为 `Up (healthy)`。
-- **日志检查**：`docker-compose logs resourcemanager`，寻找 `STARTUP_MSG: Starting ResourceManager` 和 `Transitioned to active state`，日志中不应再有关于队列初始化失败的错误。
+- **容器状态**：`docker compose ps resourcemanager`，状态应为 `Up (healthy)`。
+- **日志检查**：`docker compose logs resourcemanager`，寻找 `STARTUP_MSG: Starting ResourceManager` 和 `Transitioned to active state`，日志中不应再有关于队列初始化失败的错误。
 - **Web UI**：在浏览器中访问 [http://localhost:8088](http://localhost:8088)，能看到 YARN 的管理界面，在 "Nodes" 标签页下应能看到活动的 NodeManager，在 "Scheduler" 菜单下应能看到配置的 `root.default` 队列。
 
 #### 4.3.2 NodeManager
-- **容器状态**：`docker-compose ps nodemanager`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs nodemanager`，寻找 `STARTUP_MSG: Starting NodeManager` 和 `Registered with ResourceManager as nodemanager`。
+- **容器状态**：`docker compose ps nodemanager`，状态应为 `Up`。
+- **日志检查**：`docker compose logs nodemanager`，寻找 `STARTUP_MSG: Starting NodeManager` 和 `Registered with ResourceManager as nodemanager`。
 - **ResourceManager Web UI 确认**：访问 [http://localhost:8088/cluster/nodes](http://localhost:8088/cluster/nodes)，能看到至少一个状态为 "RUNNING" 的节点。
 
 #### 4.3.3 HistoryServer
-- **容器状态**：`docker-compose ps historyserver`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs historyserver`，寻找 `STARTUP_MSG: Starting JobHistoryServer` 和 `JobHistoryServer metrics system started`。
+- **容器状态**：`docker compose ps historyserver`，状态应为 `Up`。
+- **日志检查**：`docker compose logs historyserver`，寻找 `STARTUP_MSG: Starting JobHistoryServer` 和 `JobHistoryServer metrics system started`。
 - **Web UI**：在浏览器中访问 [http://localhost:19888](http://localhost:19888)，能看到 "JobHistory" 的界面，即使里面没有任何作业记录。
 
 ### 4.4 第四层及以上：应用层 (HBase, Hive, Spark)
 #### 4.4.1 HBase Master
-- **容器状态**：`docker-compose ps hbase-master`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs hbase-master`，寻找 `Master has completed initialization`。
+- **容器状态**：`docker compose ps hbase-master`，状态应为 `Up`。
+- **日志检查**：`docker compose logs hbase-master`，寻找 `Master has completed initialization`。
 - **Web UI**：访问 [http://localhost:16010](http://localhost:16010)，能看到 HBase Master 的 UI，并且在 "Region Servers" 部分能看到活动的 RegionServer。
 
 #### 4.4.2 Hive Metastore
-- **容器状态**：`docker-compose ps hive-metastore`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs hive-metastore`，寻找 `Starting Hive Metastore Server` 和 `Opened a connection to metastore`，并且不应有连接 `postgres-metastore` 失败的错误，首次启动会有 `schemaTool` 相关的日志。
+- **容器状态**：`docker compose ps hive-metastore`，状态应为 `Up`。
+- **日志检查**：`docker compose logs hive-metastore`，寻找 `Starting Hive Metastore Server` 和 `Opened a connection to metastore`，并且不应有连接 `postgres-metastore` 失败的错误，首次启动会有 `schemaTool` 相关的日志。
 
 #### 4.4.3 HiveServer2
-- **容器状态**：`docker-compose ps hiveserver2`，状态应为 `Up`。
-- **日志检查**：`docker-compose logs hiveserver2`，寻找 `Starting HiveServer2` 和 `HiveServer2 is started`。
+- **容器状态**：`docker compose ps hiveserver2`，状态应为 `Up`。
+- **日志检查**：`docker compose logs hiveserver2`，寻找 `Starting HiveServer2` 和 `HiveServer2 is started`。
 - **Web UI**：访问 [http://localhost:10002](http://localhost:10002)，能看到 HiveServer2 的 Web UI。
 
 #### 4.4.4 Spark 客户端（spark-client）
-- **容器状态**：`docker-compose ps spark-client`，状态应为 `Up`。
+- **容器状态**：`docker compose ps spark-client`，状态应为 `Up`。
 - **进入容器验证**：可以使用以下命令进入 `spark-client` 容器：
 ```bash
 docker exec -it spark-client bash
