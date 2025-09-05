@@ -10,7 +10,15 @@
         <value>org.postgresql.Driver</value>
         <description>Driver class name for a JDBC metastore.</description>
     </property>
-
+    <property>
+        <name>hive.log4j.file</name>
+        <value>log4j2.properties</value>
+    </property>
+    <property>
+        <name>metastore.metastore.event.db.notification.api.auth</name>
+        <value>false</value>
+        <description>Disable auth check for notification APIs</description>
+    </property>
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
         <value>hive</value>

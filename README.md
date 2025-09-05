@@ -25,14 +25,17 @@ wget https://jdbc.postgresql.org/download/postgresql-42.7.1.jar
 #### 3.2.1 构建基础层镜像
 基础层镜像包含了所有服务的依赖，使用以下命令构建：
 ```bash
-docker-compose --profile build build
+docker compose --profile build build base-builder
 ```
 说明：`base-builder` 是基础镜像，包含 Ubuntu、JDK 和基础环境。
 
 #### 3.2.2 并行构建 HBase/Hive/Spark 镜像
 由于 HBase、Hive 和 Spark 镜像之间没有相互依赖关系，可以并行构建以节省时间：
 ```bash
-docker-compose build --parallel hbase-builder hive-builder spark-builder
+docker compose --profile build build hadoop-builder
+docker compose --profile build build hbase-builder
+docker compose --profile build build hive-builder
+docker compose --profile build build spark-builder
 ```
 
 ### 3.3 启动容器
@@ -124,6 +127,21 @@ docker exec -it spark-client bash
 spark-shell
 ```
 如果能够正常启动 Spark Shell，则说明 `spark-client` 服务正常。
+
+
+## 清理
+
+docker compose down
+docker compose down --volumes --remove-orphans
+
+docker compose --profile build down --volumes
+
+docker rmi -f $(docker images -q bigdata-hadoop-base)
+docker rmi -f $(docker images -q bigdata-hive)
+docker rmi -f $(docker images -q bigdata-hbase)
+docker rmi -f $(docker images -q bigdata-spark)
+docker rmi -f $(docker images -q my-bigdata-base)
+
 
 ## 五、总结
 通过以上步骤，我们成功地使用 Docker 和 Docker Compose 搭建了一个包含多个大数据服务的开发环境，并验证了每个服务的正常运行。这种容器化的部署方式不仅方便快捷，而且易于管理和维护。希望本文能对大数据开发者有所帮助。
