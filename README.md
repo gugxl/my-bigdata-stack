@@ -29,8 +29,7 @@ docker compose --profile build build base-builder
 ```
 说明：`base-builder` 是基础镜像，包含 Ubuntu、JDK 和基础环境。
 
-#### 3.2.2 并行构建 HBase/Hive/Spark 镜像
-由于 HBase、Hive 和 Spark 镜像之间没有相互依赖关系，可以并行构建以节省时间：
+#### 3.2.2 构建 HBase/Hive/Spark 镜像
 ```bash
 docker compose --profile build build hadoop-builder
 docker compose --profile build build hbase-builder
