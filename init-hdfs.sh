@@ -19,10 +19,10 @@ function hdfs_exec() {
   docker exec namenode hdfs dfs "$@"
 }
 
-hdfs_exec -mkdir -p /tmp && hdfs_exec -chmod 777 /tmp
-hdfs_exec -mkdir -p /user/history && hdfs_exec -chmod 777 /user/history
-hdfs_exec -mkdir -p /user/hive/warehouse && hdfs_exec -chmod g+w /user/hive/warehouse
-hdfs_exec -mkdir -p /spark-logs && hdfs_exec -chmod 777 /spark-logs
+hdfs_exec -mkdir -p /tmp && hdfs_exec -chown hadoop:hadoop /tmp
+hdfs_exec -mkdir -p /user/history && hdfs_exec -chown hadoop:hadoop /user/history
+hdfs_exec -mkdir -p /user/hive/warehouse && hdfs_exec -chown hadoop:hadoop /user/hive/warehouse
+hdfs_exec -mkdir -p /spark-logs && hdfs_exec -chown hadoop:hadoop /spark-logs
 hdfs_exec -mkdir -p /hbase && hdfs_exec -chown hadoop:hadoop /hbase
 hdfs_exec -mkdir -p /user/hadoop && hdfs_exec -chown hadoop:hadoop /user/hadoop
 
