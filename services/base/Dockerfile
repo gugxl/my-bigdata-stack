@@ -19,6 +19,7 @@ RUN \
         wget \
         ssh \
         rsync \
+        net-tools \
         curl \
         sudo \
         tzdata && \
