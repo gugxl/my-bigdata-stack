@@ -86,7 +86,7 @@ services:
       - ZOO_SERVER_ID=1
 
   postgres-metastore:
-    image: postgres:14
+    image: postgres:16
     container_name: postgres-metastore
     hostname: postgres-metastore
     networks:
