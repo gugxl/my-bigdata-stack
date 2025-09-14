@@ -391,7 +391,7 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-metastore:5432/${POSTGRES_DB}
       - AIRFLOW__CORE__FERNET_KEY=pKxRNfT4l8YYlkYMtDGtrdY4TkcBRLVOjhnIkGB0GrQ=
-      - AIRFLOW__WEBSERVER__RBAC=True
+      - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.default
     volumes:
       - ./dags:/opt/airflow/dags
       - ./airflow-logs:/opt/airflow/logs
@@ -415,7 +415,7 @@ services:
     environment:
       - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-metastore:5432/${POSTGRES_DB}
       - AIRFLOW__CORE__FERNET_KEY=pKxRNfT4l8YYlkYMtDGtrdY4TkcBRLVOjhnIkGB0GrQ=
-      - AIRFLOW__WEBSERVER__RBAC=True
+      - AIRFLOW__API__AUTH_BACKEND=airflow.api.auth.backend.default
     volumes:
       - ./dags:/opt/airflow/dags
       - ./airflow-logs:/opt/airflow/logs
