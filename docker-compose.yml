@@ -337,11 +337,8 @@ services:
       - "8081:8081"
     command: jobmanager
     environment:
-      # 移除 FLINK_PROPERTIES
       - JVM_OPTS=-Djava.net.preferIPv4Stack=true
     volumes:
-      # 确保正确挂载 flink-conf.yaml 文件
-
       - ./configs/flink/flink-jobmanager.yaml:/opt/flink/conf/flink-conf.yaml
       - ./flink-jobs:/opt/flink-jobs
     depends_on:
@@ -360,10 +357,8 @@ services:
       - bigdata-net
     command: taskmanager
     environment:
-      # 移除 FLINK_PROPERTIES
       - JVM_OPTS=-Djava.net.preferIPv4Stack=true
     volumes:
-      # 确保正确挂载 flink-conf.yaml 文件
       - ./configs/flink/flink-taskmanager.yaml:/opt/flink/conf/flink-conf.yaml
       - ./flink-jobs:/opt/flink-jobs
     depends_on:
