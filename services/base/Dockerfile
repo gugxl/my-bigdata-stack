@@ -15,7 +15,7 @@ RUN \
     # 更新软件源列表并安装必要的软件包
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        openjdk-17-jdk \
+        openjdk-8-jdk \
         wget \
         ssh \
         rsync \
@@ -34,8 +34,8 @@ RUN \
 # ---- 后面的内容保持不变 ----
 
 # 设置 JAVA_HOME, PATH
-RUN ln -s /usr/lib/jvm/java-17-openjdk-* /usr/lib/jvm/java-17
-ENV JAVA_HOME=/usr/lib/jvm/java-17
+RUN ln -s /usr/lib/jvm/java-8-openjdk-* /usr/lib/jvm/java-8
+ENV JAVA_HOME=/usr/lib/jvm/java-8
 ENV PATH=$PATH:$JAVA_HOME/bin
 
 # 创建用户和设置权限

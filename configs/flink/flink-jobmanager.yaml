@@ -1,0 +1,4 @@
+jobmanager.rpc.address: flink-jobmanager
+jobmanager.memory.flink.size: 1024m
+blob.server.port: 6124
+query.server.port: 6125
