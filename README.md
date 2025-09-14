@@ -223,3 +223,6 @@ docker rmi -f $(docker images -q my-bigdata-base)
 * 确保系统已安装 **Docker 和 Docker Compose**。
 * 构建镜像和启动容器需要一定时间，请耐心等待。
 * 如果某个服务未正常启动，请查看对应容器日志排查问题。
+
+
+[wiki](https://deepwiki.com/gugxl/my-bigdata-stack)
