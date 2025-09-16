@@ -83,14 +83,7 @@ docker compose up -d historyserver
 3. 创建管理员账号：
 
    ```bash
-   docker compose run --rm airflow-webserver \
-     airflow users create \
-       --username admin \
-       --firstname Air \
-       --lastname Flow \
-       --role Admin \
-       --email admin@example.com \
-       --password admin
+   docker compose run --rm airflow-webserver      airflow users create        --username admin --firstname Air --lastname Flow --role Admin --email admin@example.com    --password admin
    ```
 
 4. 重启服务：
