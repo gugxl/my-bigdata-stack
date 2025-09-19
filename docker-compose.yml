@@ -369,7 +369,6 @@ services:
     image: apache/airflow:2.8.1
     container_name: airflow-scheduler
     hostname: airflow-scheduler
-    restart: always
     networks:
       - bigdata-net
     command: scheduler
@@ -396,7 +395,6 @@ services:
     image: apache/airflow:2.8.1
     container_name: airflow-webserver
     hostname: airflow-webserver
-    restart: always
     networks:
       - bigdata-net
     ports:
