@@ -30,6 +30,7 @@ wget https://archive.apache.org/dist/hive/hive-4.0.1/apache-hive-4.0.1-bin.tar.g
 wget https://archive.apache.org/dist/spark/spark-3.5.0/spark-3.5.0-bin-hadoop3.tgz
 wget https://jdbc.postgresql.org/download/postgresql-42.7.1.jar
 ```
+放到downloads文件夹下
 
 ### 3.2 构建镜像
 
