@@ -2,4 +2,4 @@ taskmanager.rpc.address: flink-taskmanager
 taskmanager.memory.flink.size: 1024m
 blob.server.port: 6124
 query.server.port: 6125
-jobmanager.rpc.address: flink-taskmanager
+jobmanager.rpc.address: flink-jobmanager
