@@ -24,4 +24,9 @@
         <name>hbase.wal.provider</name>
         <value>filesystem</value>
     </property>
+    <!-- 临时禁用压缩检查，使用 LZ4 替代 Snappy -->
+    <property>
+        <name>hbase.table.sanity.checks</name>
+        <value>false</value>
+    </property>
 </configuration>

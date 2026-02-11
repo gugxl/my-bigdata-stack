@@ -9,7 +9,7 @@ ENV TZ=Asia/Shanghai
 # 2. 【优化点】将换源、安装依赖和清理缓存合并到同一个 RUN 指令中
 #    这可以减少镜像层数，并确保缓存逻辑正确
 RUN \
-    # 【关键修改】使用更全面的 sed 命令，将所有可能的官方源（包括 ports.ubuntu.com）一次性替换
+    # 使用更全面的 sed 命令，将所有可能的官方源（包括 ports.ubuntu.com）一次性替换
     sed -i 's/archive.ubuntu.com\|security.ubuntu.com\|ports.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
     \
     # 更新软件源列表并安装必要的软件包

@@ -1,5 +1,3 @@
-# my-bigdata-stack/services/hbase/Dockerfile
-
 FROM bigdata-hadoop-base:latest
 
 USER root
@@ -8,6 +6,7 @@ ENV HBASE_HOME=/opt/hbase
 ENV HBASE_CONF_DIR=${HBASE_HOME}/conf
 ENV HBASE_LOG_DIR=/var/log/hbase
 ENV PATH=$PATH:${HBASE_HOME}/bin
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu:/opt/hadoop/lib/native
 
 COPY downloads/hbase-${HBASE_VERSION}-bin.tar.gz /tmp/
 

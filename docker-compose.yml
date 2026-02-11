@@ -98,7 +98,7 @@ services:
     networks:
       - bigdata-net
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       - postgres_metastore_data:/var/lib/postgresql/data
     environment:
