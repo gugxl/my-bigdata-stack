@@ -29,4 +29,79 @@
         <name>hbase.table.sanity.checks</name>
         <value>false</value>
     </property>
+    
+    <!-- PE 性能测试优化配置 -->
+    <!-- Memstore 刷新阈值，默认 128MB -->
+    <property>
+        <name>hbase.hregion.memstore.flush.size</name>
+        <value>134217728</value>
+    </property>
+    <!-- 触发阻塞的 storefile 数量，默认 16 -->
+    <property>
+        <name>hbase.hstore.blockingStoreFiles</name>
+        <value>50</value>
+    </property>
+    <!-- 触发合并的最小 storefile 数量，默认 4 -->
+    <property>
+        <name>hbase.hstore.compactionThreshold</name>
+        <value>3</value>
+    </property>
+    <!-- 小合并线程数，默认 1 -->
+    <property>
+        <name>hbase.regionserver.thread.compaction.small</name>
+        <value>5</value>
+    </property>
+    <!-- 大合并线程数，默认 1 -->
+    <property>
+        <name>hbase.regionserver.thread.compaction.large</name>
+        <value>3</value>
+    </property>
+    <!-- Memstore 总大小限制（RegionServer 级别），默认 0.4，与 BlockCache 总和不能超过 0.8 -->
+    <property>
+        <name>hbase.regionserver.global.memstore.size</name>
+        <value>0.4</value>
+    </property>
+    <!-- 阻塞写入的 Memstore 比例，默认 0.95 -->
+    <property>
+        <name>hbase.hregion.memstore.block.multiplier</name>
+        <value>4</value>
+    </property>
+    <!-- WAL 刷新策略，避免 HDFS 压力过大 -->
+    <property>
+        <name>hbase.regionserver.wal.batch.size</name>
+        <value>65536</value>
+    </property>
+    <!-- 禁用 Snappy 压缩，避免原生库缺失问题 -->
+    <property>
+        <name>hbase.io.compression.codecs</name>
+        <value>gz,lz4,zstd</value>
+    </property>
+    <!-- 禁用默认压缩 -->
+    <property>
+        <name>hfile.default.storage.policy</name>
+        <value>HOT</value>
+    </property>
+    <!-- 允许使用 GZ 替代 Snappy -->
+    <property>
+        <name>hbase.mapreduce.hfileoutputformat.compress.algo</name>
+        <value>gz</value>
+    </property>
+    <!-- 修复主机名不匹配问题 - 使用固定 IP 地址避免 FQDN 问题 -->
+    <property>
+        <name>hbase.regionserver.hostname</name>
+        <value>192.168.97.101</value>
+    </property>
+    <property>
+        <name>hbase.master.hostname</name>
+        <value>192.168.97.100</value>
+    </property>
+    <!-- 禁用 FQDN 解析 -->
+    <property>
+        <name>hbase.regionserver.dns.interface</name>
+        <value>default</value>
+    </property>
+    <property>
+        <name>hbase.master.dns.interface</name>
+        <value>default</value>
+    </property>
 </configuration>

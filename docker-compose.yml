@@ -218,6 +218,12 @@ services:
       - ./configs/hadoop:/etc/hadoop
     environment:
       - HBASE_OPTS=-Djava.net.preferIPv4Stack=true
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 2G
 
   hbase-regionserver:
     image: bigdata-hbase:latest
@@ -235,6 +241,12 @@ services:
       - ./configs/hadoop:/etc/hadoop
     environment:
       - HBASE_OPTS=-Djava.net.preferIPv4Stack=true
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
 
   hive-metastore:
     image: bigdata-hive:latest
